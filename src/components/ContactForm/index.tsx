@@ -5,19 +5,20 @@ import {
   ChangeEvent
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+
 import { RootState, AppDispatch } from '../../app/store'
 import {
   addContact,
   updateContact,
   cancelEditing
 } from '../../features/contacts/contactsSlice'
-import type { ContactsState } from '../../features/contacts/types'
+import { ContactsState } from '../../features/contacts/types'
 import * as S from './styles'
 
 // --------- helpers ---------
 
 const formatPhone = (value: string) => {
-  // pega só os dígitos e limita a 11 (DDD + 9 dígitos)
   const digits = value.replace(/\D/g, '').slice(0, 11)
 
   const ddd = digits.slice(0, 2)
@@ -42,10 +43,10 @@ const isValidEmail = (value: string) => {
 
 // --------- componente ---------
 
-export function ContactForm() {
+export function ContactForm(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
 
-  // aqui está o pulo do gato: tipamos o useSelector
   const { list, editingId } = useSelector<RootState, ContactsState>(
     (state) => state.contacts
   )
@@ -102,6 +103,9 @@ export function ContactForm() {
     } else {
       dispatch(addContact({ name, email, phone }))
     }
+
+    // depois de salvar, volta pra lista
+    navigate('/')
   }
 
   return (
@@ -139,7 +143,7 @@ export function ContactForm() {
           placeholder="(11)98722-8712"
           value={phone}
           onChange={handlePhoneChange}
-          maxLength={15} /* (11)98722-8712 cabe tranquilo */
+          maxLength={15}
         />
       </S.Field>
 
